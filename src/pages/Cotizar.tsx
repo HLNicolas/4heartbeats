@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowRight, Check } from "lucide-react";
+import { calculateEstimateRange, WHATSAPP_PHONE_NUMBER } from "../utils/pricing";
 
 interface FormData {
   tipo: string;
@@ -7,6 +8,7 @@ interface FormData {
   fecha: string;
   ciudad: string;
   invitados: string;
+  horas: string;
   nombre: string;
   contacto: string;
   canal: "WhatsApp" | "Correo";
@@ -35,9 +37,11 @@ interface FormFieldProps {
   value: string;
   onChange: (val: string) => void;
   type?: string;
+  min?: string;
+  placeholder?: string;
 }
 
-const FormField: React.FC<FormFieldProps> = ({ label, value, onChange, type = "text" }) => {
+const FormField: React.FC<FormFieldProps> = ({ label, value, onChange, type = "text", min, placeholder }) => {
   return (
     <div>
       <label className="block text-sm font-medium text-foreground">{label}</label>
@@ -45,8 +49,63 @@ const FormField: React.FC<FormFieldProps> = ({ label, value, onChange, type = "t
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        min={min}
+        placeholder={placeholder}
         className="mt-1.5 w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-terracotta focus:outline-none focus:ring-2 focus:ring-terracotta/30"
       />
+    </div>
+  );
+};
+
+const getMinDateStr = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 7);
+  return date.toISOString().split("T")[0];
+};
+
+const isMinSevenDays = (dateStr: string) => {
+  if (!dateStr) return false;
+  const selected = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffTime = selected.getTime() - today.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  return diffDays >= 7;
+};
+
+const SummaryDetails: React.FC<{ data: FormData; workers: number }> = ({ data, workers }) => {
+  return (
+    <div className="mt-4 border-t border-dashed border-border/80 pt-4 text-left space-y-2 text-xs text-muted-foreground">
+      <div className="flex justify-between">
+        <span>Evento:</span>
+        <span className="font-semibold text-foreground">{data.tipo}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Fecha:</span>
+        <span className="font-semibold text-foreground">{data.fecha}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Lugar:</span>
+        <span className="font-semibold text-foreground">{data.ciudad}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Invitados:</span>
+        <span className="font-semibold text-foreground">{data.invitados} personas</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Duración:</span>
+        <span className="font-semibold text-foreground">{data.horas} horas</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Personal:</span>
+        <span className="font-semibold text-foreground">{workers} colaboradoras</span>
+      </div>
+      {data.servicios.length > 0 && (
+        <div className="border-t border-border/40 pt-2">
+          <span className="block mb-1 text-[10px] uppercase tracking-wider font-semibold">Servicios de interés:</span>
+          <span className="block text-foreground leading-normal">{data.servicios.join(", ")}</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -60,6 +119,7 @@ export const Cotizar: React.FC = () => {
     fecha: "",
     ciudad: "",
     invitados: "",
+    horas: "4", // Default value
     nombre: "",
     contacto: "",
     canal: "WhatsApp"
@@ -80,7 +140,7 @@ export const Cotizar: React.FC = () => {
   const handleNext = () => {
     if (step === 1 && !formData.tipo) return;
     if (step === 2 && formData.servicios.length === 0) return;
-    if (step === 3 && (!formData.fecha || !formData.ciudad || !formData.invitados)) return;
+    if (step === 3 && (!formData.fecha || !formData.ciudad || !formData.invitados || !formData.horas)) return;
     
     setStep((prev) => Math.min(4, prev + 1));
   };
@@ -97,12 +157,44 @@ export const Cotizar: React.FC = () => {
   const isStepValid = () => {
     if (step === 1) return !!formData.tipo;
     if (step === 2) return formData.servicios.length > 0;
-    if (step === 3) return !!formData.fecha && !!formData.ciudad && !!formData.invitados;
+    if (step === 3) {
+      const numInvitados = parseInt(formData.invitados, 10) || 0;
+      const numHoras = parseInt(formData.horas, 10) || 0;
+      const isDateValid = isMinSevenDays(formData.fecha);
+      return !!formData.fecha && !!formData.ciudad && numInvitados > 0 && numHoras > 0 && isDateValid;
+    }
     if (step === 4) return !!formData.nombre && !!formData.contacto;
     return true;
   };
 
-  const whatsappMessage = `Hola, acabo de enviar una cotización para un/a ${formData.tipo} el ${formData.fecha}.`;
+  const priceRange = calculateEstimateRange(
+    formData.tipo,
+    formData.invitados,
+    parseInt(formData.horas, 10) || 4
+  );
+
+  const servicesText = formData.servicios.map((s) => `- ${s}`).join("\n");
+  const whatsappMessage = `*Nueva Solicitud de Cotización* 🌸
+
+*Detalles del cliente:*
+- *Nombre:* ${formData.nombre}
+- *Contacto:* ${formData.contacto} (Preferencia: ${formData.canal})
+
+*Detalles del evento:*
+- *Tipo:* ${formData.tipo}
+- *Fecha:* ${formData.fecha}
+- *Ciudad/Zona:* ${formData.ciudad}
+- *Invitados:* ~${formData.invitados} personas
+- *Duración:* ${formData.horas} horas
+- *Personal:* ${priceRange.workers} colaboradoras (1 cada 7 personas)
+
+*Servicios de interés:*
+${servicesText}
+
+*Cotización Estimada:*
+S/ ${priceRange.min} - S/ ${priceRange.max}* (rango negociable)
+
+_*Nota: Cotización sujeta a confirmación final._`;
 
   return (
     <div>
@@ -120,21 +212,47 @@ export const Cotizar: React.FC = () => {
       {/* Form Card Container */}
       <section className="container-page mt-10 pb-20">
         <div className="mx-auto max-w-2xl rounded-3xl border border-border bg-card p-7 shadow-card md:p-10">
-          {submitted ? (
+           {submitted ? (
             /* Thank You Screen */
-            <div className="py-12 text-center">
+            <div className="py-8 text-center space-y-6">
               <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-sage/15 text-sage">
                 <Check className="h-7 w-7" />
               </div>
-              <h2 className="mt-5 text-3xl text-primary font-medium">¡Solicitud recibida!</h2>
-              <p className="mt-3 text-muted-foreground text-sm">
-                Te contactaremos por {formData.canal} en menos de 24 horas hábiles.
+              <div>
+                <h2 className="text-3xl text-primary font-medium font-display">¡Solicitud recibida!</h2>
+                <p className="mt-2 text-muted-foreground text-sm">
+                  Hemos calculado un presupuesto estimado preliminar para tu evento.
+                </p>
+              </div>
+
+              {/* Price Estimate Card */}
+              <div className="mx-auto max-w-sm rounded-2xl bg-sand/40 border border-sand p-6 text-center shadow-soft">
+                <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+                  Presupuesto Estimado
+                </span>
+                <p className="mt-2 text-3xl font-bold text-primary font-display">
+                  S/ {priceRange.min} — S/ {priceRange.max}
+                </p>
+                <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                  ({priceRange.workers} colaboradoras asignadas)
+                </p>
+                <p className="mt-3 text-[10px] text-muted-foreground leading-normal">
+                  *Incluye 5% de mantenimiento y servicio.
+                </p>
+
+                {/* Detalles de la reserva */}
+                <SummaryDetails data={formData} workers={priceRange.workers} />
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                Te contactaremos por {formData.canal} en menos de 24 horas hábiles para coordinar los detalles. Haz clic a continuación para enviarnos el resumen de tu cotización directamente por WhatsApp.
               </p>
+
               <a
-                href={`https://wa.me/0000000000?text=${encodeURIComponent(whatsappMessage)}`}
+                href={`https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary mt-7"
+                className="btn-primary mx-auto inline-flex items-center gap-2"
               >
                 Continuar por WhatsApp <ArrowRight className="h-4 w-4" />
               </a>
@@ -217,8 +335,9 @@ export const Cotizar: React.FC = () => {
                 <div className="space-y-4">
                   <h2 className="text-2xl text-primary">Detalles de la celebración</h2>
                   <FormField
-                    label="Fecha del evento"
+                    label="Fecha del evento (mínimo 7 días de anticipación)"
                     type="date"
+                    min={getMinDateStr()}
                     value={formData.fecha}
                     onChange={(val) => setFormData({ ...formData, fecha: val })}
                   />
@@ -227,12 +346,22 @@ export const Cotizar: React.FC = () => {
                     value={formData.ciudad}
                     onChange={(val) => setFormData({ ...formData, ciudad: val })}
                   />
-                  <FormField
-                    label="N° aproximado de invitados"
-                    type="number"
-                    value={formData.invitados}
-                    onChange={(val) => setFormData({ ...formData, invitados: val })}
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      label="N° de invitados"
+                      type="number"
+                      min="1"
+                      value={formData.invitados}
+                      onChange={(val) => setFormData({ ...formData, invitados: val })}
+                    />
+                    <FormField
+                      label="Duración (horas)"
+                      type="number"
+                      min="1"
+                      value={formData.horas}
+                      onChange={(val) => setFormData({ ...formData, horas: val })}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -268,6 +397,25 @@ export const Cotizar: React.FC = () => {
                         );
                       })}
                     </div>
+                  </div>
+
+                  {/* Vista previa de la cotización antes de enviar */}
+                  <div className="mt-6 rounded-2xl bg-sand/30 border border-sand p-5 text-center shadow-soft animate-fade-in">
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+                      Presupuesto Preliminar Estimado
+                    </span>
+                    <p className="mt-2 text-2xl font-bold text-primary font-display">
+                      S/ {priceRange.min} — S/ {priceRange.max}
+                    </p>
+                    <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                      ({priceRange.workers} colaboradoras requeridas)
+                    </p>
+                    <p className="mt-2 text-[10px] text-muted-foreground leading-normal">
+                      *Incluye 5% de mantenimiento y servicio.
+                    </p>
+
+                    {/* Resumen de la información ingresada */}
+                    <SummaryDetails data={formData} workers={priceRange.workers} />
                   </div>
                 </div>
               )}

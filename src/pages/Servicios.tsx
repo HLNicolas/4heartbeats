@@ -1,12 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Wrench, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
+import { calculateEstimateRange } from "../utils/pricing";
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+const faqs: FAQItem[] = [
+  {
+    question: "¿Con cuánta anticipación debo reservar mi cotización?",
+    answer: "Recomendamos cotizar y reservar con al menos 7 a 15 días de anticipación para asegurar la disponibilidad de nuestras colaboradoras y planificar la logística de tu evento de la mejor manera."
+  },
+  {
+    question: "¿Los insumos y materiales de limpieza están incluidos?",
+    answer: "Nuestros servicios estándar no incluyen insumos ni herramientas de limpieza (como trapeadores, aspiradoras o detergentes). Sin embargo, al coordinar los detalles finales de tu cotización, podemos cotizar el kit completo de insumos si prefieres que nosotros los llevemos."
+  },
+  {
+    question: "¿Cómo funciona el transporte de la repostería y decoración?",
+    answer: "Nos encargamos de transportar y montar todo con el mayor cuidado en el lugar del evento. Este costo de transporte se calcula y detalla de manera transparente en la cotización final según la distancia."
+  },
+  {
+    question: "¿Qué pasa si ocurre algún daño material accidental?",
+    answer: "La tranquilidad de tu hogar es nuestra prioridad. Contamos con políticas claras de responsabilidad y supervisión constante. Ante cualquier imprevisto de daño material causado directamente por nuestro personal en el cumplimiento de su labor, responderemos por la reparación o reposición correspondiente."
+  },
+  {
+    question: "¿Cómo se realizan los pagos?",
+    answer: "Los pagos se realizan a través de transferencia bancaria o canales digitales autorizados. Se solicita un abono inicial para confirmar el servicio (especialmente en decoración y repostería) y el saldo restante se liquida antes o inmediatamente al finalizar el evento."
+  }
+];
 
 interface ServiceOperativo {
   name: string;
   desc: string;
   time: string;
   who: string;
+  assumedHours: number;
+  assumedGuests: number;
+  assumedEvent: string;
 }
 
 interface ServiceCreativo {
@@ -17,54 +49,68 @@ interface ServiceCreativo {
 
 const operativos: ServiceOperativo[] = [
   {
-    name: "Preparación y Montaje",
-    desc: "Dejamos tu casa o local impecable y te ayudamos a armar las mesas, mantelería y detalles decorativos antes de que lleguen tus invitados.",
+    name: "Bienvenida Impecable (Antes)",
+    desc: "Dejamos tu hogar o salón impecable antes del evento. Te ayudamos a vestir las mesas, ordenar la mantelería y colocar cada detalle en su lugar.",
     time: "2-4h",
-    who: "Cumpleaños, reuniones y fiestas íntimas"
+    who: "Cumpleaños, reuniones y fiestas íntimas",
+    assumedHours: 3,
+    assumedGuests: 30,
+    assumedEvent: "Cumpleaños"
   },
   {
-    name: "Limpieza profunda final",
-    desc: "Disfruta de la fiesta hasta el último minuto. Al terminar, nosotros nos encargamos de recoger todo, lavar los platos e impecabilizar tu hogar.",
+    name: "Despedida Relajada (Después)",
+    desc: "Disfruta de tus invitados hasta el último minuto. Al terminar, lavamos la vajilla, recogemos todo y dejamos tu casa impecable para que descanses.",
     time: "3-6h",
-    who: "Anfitriones que quieren descansar al terminar"
+    who: "Anfitriones que quieren descansar al terminar",
+    assumedHours: 4,
+    assumedGuests: 30,
+    assumedEvent: "Cumpleaños"
   },
   {
-    name: "Soporte y Atención durante el festejo",
-    desc: "Equipo cálido para servir la comida, repartir bebidas a tus invitados, reponer pasabocas y mantener todo ordenado en tiempo real.",
+    name: "Atención Cariñosa (Durante)",
+    desc: "Un equipo cálido y atento para servir los platos, reponer pasabocas, servir bebidas y cuidar el orden de las mesas en tiempo real.",
     time: "Por horas o paquete",
-    who: "Bautizos, bodas en jardín y celebraciones"
+    who: "Bautizos, bodas en jardín y celebraciones",
+    assumedHours: 5,
+    assumedGuests: 50,
+    assumedEvent: "Bautizo / Comunión"
   }
 ];
 
 const creativos: ServiceCreativo[] = [
   {
-    name: "Candy bar y repostería casera",
-    desc: "Mesas de dulces temáticas y personalizadas con tartas, galletas y repostería artesanal de recetas tradicionales.",
+    name: "Repostería Casera & Candy Bar",
+    desc: "Tortas caseras, galletas decoradas y mesas de dulces temáticas elaboradas artesanalmente con recetas tradicionales y mucho amor.",
     img: import.meta.env.BASE_URL + "assets/service-candy-CCU3OixR.jpg"
   },
   {
-    name: "Decoración integral personalizada",
-    desc: "Diseño, ambientación y montaje de rincones especiales y fondos para fotos según la temática de tu celebración.",
+    name: "Rincones Mágicos & Decoración",
+    desc: "Diseño y ambientación de rincones fotográficos hermosos y fondos temáticos adaptados a la ilusión de tu celebración.",
     img: import.meta.env.BASE_URL + "assets/service-decor-nzMl6I_T.jpg"
   },
   {
-    name: "Artesanías y recordatorios",
-    desc: "Centros de mesa, recuerdos de bautizo/comunión y pequeños detalles tejidos o hechos a mano con cariño.",
+    name: "Detalles Hechos a Mano & Recuerdos",
+    desc: "Centros de mesa, souvenirs y recordatorios tejidos o elaborados a mano con dedicación por nuestras mamás emprendedoras.",
     img: import.meta.env.BASE_URL + "assets/service-cleaning-l_c3EHGw.jpg"
   }
 ];
 
 export const Servicios: React.FC = () => {
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const toggleFAQ = (index: number) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
   return (
     <div>
       {/* Page Header */}
       <section className="container-page pb-12 pt-16 md:pt-24">
-        <span className="eyebrow">Servicios</span>
+        <span className="eyebrow">Nuestra Ayuda</span>
         <h1 className="mt-3 max-w-3xl text-4xl sm:text-5xl text-primary">
-          Apoyo logístico y detalles creativos. <span className="italic text-terracotta">Todo para tu fiesta.</span>
+          Amor en los detalles y <span className="italic text-terracotta">tranquilidad para celebrar.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
-          Nos encargamos de las tareas pesadas de la organización para que puedas ser un invitado más y disfrutar de tus seres queridos.
+          Cuidamos de tu hogar y tus invitados con la calidez de una madre, permitiéndote ser el verdadero anfitrión de tu fiesta.
         </p>
       </section>
 
@@ -73,11 +119,11 @@ export const Servicios: React.FC = () => {
         <div className="container-page py-20">
           <div className="flex items-center gap-3">
             <Wrench className="h-5 w-5 text-primary" />
-            <span className="eyebrow !text-primary">Servicios de Soporte</span>
+            <span className="eyebrow !text-primary">Manos Aliadas</span>
           </div>
-          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl text-primary">Para tu tranquilidad en casa</h2>
+          <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl text-primary">Tu hogar en las mejores manos</h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">
-            Madres de total confianza, uniformadas, meticulosas y amables. Elige el apoyo que necesitas por hora o por paquete.
+            Mamás dedicadas, de plena confianza, uniformadas y amables. Elige el apoyo que desees por horas para tu total tranquilidad.
           </p>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -96,6 +142,12 @@ export const Servicios: React.FC = () => {
                   <div className="flex justify-between border-b border-border/60 pb-2">
                     <dt className="text-muted-foreground">Duración</dt>
                     <dd className="font-medium text-foreground">{service.time}</dd>
+                  </div>
+                  <div className="flex justify-between border-b border-border/60 pb-2">
+                    <dt className="text-muted-foreground">Valor Estimado</dt>
+                    <dd className="font-semibold text-terracotta">
+                      S/ {calculateEstimateRange(service.assumedEvent, service.assumedGuests, service.assumedHours).min} - S/ {calculateEstimateRange(service.assumedEvent, service.assumedGuests, service.assumedHours).max}
+                    </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Ideal para</dt>
@@ -119,11 +171,11 @@ export const Servicios: React.FC = () => {
       <section className="container-page py-20 lg:py-28">
         <div className="flex items-center gap-3">
           <Sparkles className="h-5 w-5 text-terracotta" />
-          <span className="eyebrow">Creativos</span>
+          <span className="eyebrow">Magia Hecha a Mano</span>
         </div>
-        <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl text-primary">Para que se vea memorable</h2>
+        <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl text-primary">Detalles que enamoran a tus invitados</h2>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Detalles hechos a mano y repostería casera elaborada con esmero por nuestras emprendedoras.
+          Tortas caseras horneadas con amor y rincones mágicos decorados por nuestras mamás creadoras.
         </p>
 
         <div className="mt-12 space-y-12">
@@ -164,17 +216,23 @@ export const Servicios: React.FC = () => {
                     <tr>
                       <td className="py-3 text-foreground font-medium">Combo Anfitrión Feliz</td>
                       <td className="py-3 text-muted-foreground">Hasta 30 invitados (postres básicos)</td>
-                      <td className="py-3 text-right font-medium text-foreground">$ — cotizar</td>
+                      <td className="py-3 text-right font-medium text-foreground">
+                        S/ {calculateEstimateRange("Cumpleaños", 30, 4).min} - S/ {calculateEstimateRange("Cumpleaños", 30, 4).max}
+                      </td>
                     </tr>
                     <tr>
                       <td className="py-3 text-foreground font-medium">Combo Despreocúpate</td>
                       <td className="py-3 text-muted-foreground">Hasta 80 invitados (montaje + decoración)</td>
-                      <td className="py-3 text-right font-medium text-foreground">$ — cotizar</td>
+                      <td className="py-3 text-right font-medium text-foreground">
+                        S/ {calculateEstimateRange("Cumpleaños", 80, 5).min} - S/ {calculateEstimateRange("Cumpleaños", 80, 5).max}
+                      </td>
                     </tr>
                     <tr>
                       <td className="py-3 text-foreground font-medium">Combo Dulce Detalle</td>
                       <td className="py-3 text-muted-foreground">Personalizado (+ recordatorios a mano)</td>
-                      <td className="py-3 text-right font-medium text-foreground">$ — cotizar</td>
+                      <td className="py-3 text-right font-medium text-foreground">
+                        S/ {calculateEstimateRange("Cumpleaños", 120, 6).min} - S/ {calculateEstimateRange("Cumpleaños", 120, 6).max}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -185,6 +243,53 @@ export const Servicios: React.FC = () => {
               </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="border-t border-border bg-sand/20 py-20">
+        <div className="container-page mx-auto max-w-3xl">
+          <div className="text-center">
+            <span className="eyebrow">Preguntas Frecuentes</span>
+            <h2 className="mt-3 text-3xl sm:text-4xl text-primary font-display">Dudas comunes de nuestros anfitriones</h2>
+            <p className="mt-3 text-muted-foreground text-sm">
+              Todo lo que necesitas saber antes de contratar el soporte perfecto para tu evento.
+            </p>
+          </div>
+
+          <div className="mt-10 space-y-4">
+            {faqs.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div
+                  key={index}
+                  className="rounded-2xl border border-border bg-card p-5 shadow-soft transition-colors"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFAQ(index)}
+                    className="flex w-full items-center justify-between gap-4 text-left font-medium text-foreground cursor-pointer focus:outline-none"
+                  >
+                    <span className="text-base sm:text-lg font-display font-medium">{faq.question}</span>
+                    <span className={`text-xl text-terracotta transition-transform duration-300 font-sans ${isOpen ? "rotate-45" : ""}`}>
+                      +
+                    </span>
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ${
+                      isOpen ? "grid-rows-[1fr] mt-3 opacity-100" : "grid-rows-[0fr] opacity-0 overflow-hidden"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="text-sm text-muted-foreground leading-relaxed pt-2 border-t border-border/40">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

@@ -9,6 +9,7 @@ import { Nosotros } from "./pages/Nosotros";
 import { Contacto } from "./pages/Contacto";
 import { Cotizar } from "./pages/Cotizar";
 import { TrabajaConNosotros } from "./pages/TrabajaConNosotros";
+import { Admin } from "./pages/Admin";
 
 // Scroll Restoration Helper Component
 const ScrollToTop: React.FC = () => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           <Route path="contacto" element={<Contacto />} />
           <Route path="cotizar" element={<Cotizar />} />
           <Route path="trabaja-con-nosotros" element={<TrabajaConNosotros />} />
+          <Route path="panel-secreto" element={<Admin />} />
           {/* Catch-all fallback redirect to home */}
           <Route path="*" element={<Home />} />
         </Route>

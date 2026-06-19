@@ -11,23 +11,23 @@ interface VerificationStep {
 const steps: VerificationStep[] = [
   {
     Icon: ShieldCheck,
-    title: "Verificación de antecedentes",
-    desc: "Validación documental y referencias."
+    title: "Confianza Respaldada",
+    desc: "Validamos de forma atenta la documentación y referencias personales de cada mamá."
   },
   {
     Icon: Users,
-    title: "Entrevista personal",
-    desc: "Conocemos su historia, fortalezas y disponibilidad."
+    title: "Vínculo Humano",
+    desc: "Nos reunimos en persona para conocer su historia, sus fortalezas y sus metas familiares."
   },
   {
     Icon: Award,
-    title: "Capacitación interna",
-    desc: "Protocolos de servicio, higiene y atención al cliente."
+    title: "Capacitación y Cuidado",
+    desc: "Entrenamos de forma gratuita en técnicas de servicio, repostería, higiene y calidez."
   },
   {
     Icon: Heart,
-    title: "Uniforme e ID visible",
-    desc: "Cada persona llega identificada y supervisada."
+    title: "Identificación y Cariño",
+    desc: "Llegamos a tu evento debidamente uniformadas y listas para apoyarte con una sonrisa."
   }
 ];
 
@@ -38,10 +38,10 @@ export const Nosotros: React.FC = () => {
       <section className="container-page pt-16 md:pt-24">
         <span className="eyebrow">Nosotros</span>
         <h1 className="mt-3 max-w-3xl text-4xl sm:text-5xl text-primary">
-          Una agencia profesional. Un equipo con propósito.
+          Cuidado con propósito. Un equipo hecho familia.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-          No somos una fundación. Somos una empresa de servicios que decidió construir su equipo principal con mujeres en situación vulnerable, capacitarlas y proyectarlas hacia la autonomía económica.
+          Somos una iniciativa social que cree en la dedicación de las madres. Las capacitamos y certificamos profesionalmente en servicios para el hogar y repostería, impulsando su autonomía económica mientras cuidan de tu festejo.
         </p>
       </section>
 
@@ -56,21 +56,21 @@ export const Nosotros: React.FC = () => {
         />
         
         <div>
-          <h2 className="text-3xl sm:text-4xl text-primary">Por qué existimos</h2>
+          <h2 className="text-3xl sm:text-4xl text-primary">Nuestra Razón de Ser</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            Identificamos dos realidades: pequeños negocios que necesitan personal confiable on-demand para sus eventos, y mujeres con experiencia y talento que no encuentran espacios de trabajo digno y flexible. 4 Heartbeats conecta esas dos necesidades con estándares de agencia profesional.
+            Nacimos al conectar dos realidades: familias que desean celebrar con tranquilidad y disfrutar de su tiempo, y madres talentosas y dedicadas que buscan un ingreso justo en un horario que les permita cuidar de sus propios hijos. En 4 Heartbeats unimos estas necesidades con afecto y profesionalismo.
           </p>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            Cada servicio que se contrata se traduce en horas pagadas, capacitación continua y proyección comercial para los microemprendimientos de nuestras integrantes.
+            Cada vez que nos abres las puertas de tu celebración, estás respaldando horas de empleo digno, capacitación continua y un futuro más seguro para los hogares de nuestras colaboradoras.
           </p>
         </div>
       </section>
 
       {/* Verification Steps Section */}
       <section className="container-page mt-24">
-        <h2 className="text-3xl sm:text-4xl text-primary">Nuestro proceso de verificación</h2>
+        <h2 className="text-3xl sm:text-4xl text-primary">Cuidamos la Confianza en tu Hogar</h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
-          La confianza no se declara, se construye. Esto es lo que hacemos antes de enviar a una persona a tu evento:
+          Sabemos que tu hogar es sagrado. Por eso, nos aseguramos de brindarte máxima tranquilidad con un proceso de acompañamiento muy riguroso:
         </p>
         
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">

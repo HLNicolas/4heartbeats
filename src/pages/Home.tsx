@@ -9,13 +9,13 @@ export const Home: React.FC = () => {
       <section className="relative overflow-hidden">
         <div className="container-page grid gap-10 pb-16 pt-12 md:grid-cols-12 md:gap-12 md:py-20 lg:py-28">
           <div className="md:col-span-6 lg:col-span-6 flex flex-col justify-center">
-            <span className="eyebrow">Momentos felices, sin preocupaciones</span>
+            <span className="eyebrow">Momentos felices en familia</span>
             <h1 className="mt-4 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl text-primary">
-              Disfruta de tu fiesta.{" "}
+              Disfruta cada risa.{" "}
               <span className="text-terracotta italic">Nosotros nos encargamos</span> del resto.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Limpieza, montaje, repostería y decoración con el cuidado y calidez de una madre. Una sola agencia para que seas un invitado más en tu propia celebración.
+              Limpieza, mantelería, tortas caseras y detalles hechos a mano con el amor y cuidado de una madre. Creamos el ambiente ideal para que solo te preocupes de celebrar.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/cotizar" className="btn-primary">
@@ -101,11 +101,11 @@ export const Home: React.FC = () => {
             <div className="p-7">
               <div className="flex items-center gap-2">
                 <Wrench className="h-4 w-4 text-primary" />
-                <span className="eyebrow !text-foreground/60">Servicios de Soporte</span>
+                <span className="eyebrow !text-foreground/60">Manos Aliadas en Casa</span>
               </div>
-              <h3 className="mt-2 text-2xl !text-foreground font-display">Despreocúpate de la logística</h3>
+              <h3 className="mt-2 text-2xl !text-foreground font-display">El cuidado que tu hogar merece</h3>
               <p className="mt-3 text-muted-foreground">
-                Tu hogar o salón listo antes, durante y después del festejo. Personal cálido, puntual y de total confianza.
+                Tu casa impecable y ordenada antes, durante y al terminar el festejo. Atención puntual, cariñosa y de plena confianza.
               </p>
               <ul className="mt-5 space-y-2">
                 <li className="flex items-start gap-2 text-sm text-foreground/85">
@@ -142,11 +142,11 @@ export const Home: React.FC = () => {
             <div className="p-7">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-terracotta" />
-                <span className="eyebrow !text-foreground/60">Repostería & Decoración</span>
+                <span className="eyebrow !text-foreground/65">Detalles Dulces & Creativos</span>
               </div>
-              <h3 className="mt-2 text-2xl !text-foreground font-display">Detalles hechos con amor</h3>
+              <h3 className="mt-2 text-2xl !text-foreground font-display">Recetas caseras y rincones mágicos</h3>
               <p className="mt-3 text-muted-foreground">
-                Candy bars temáticos, repostería artesanal y recordatorios hechos a mano por nuestras emprendedoras.
+                Tortas artesanales hechas con recetas de siempre y rincones fotográficos tejidos a mano para atesorar recuerdos hermosos.
               </p>
               <ul className="mt-5 space-y-2">
                 <li className="flex items-start gap-2 text-sm text-foreground/85">
@@ -172,36 +172,36 @@ export const Home: React.FC = () => {
         <div className="container-page py-20 lg:py-24">
           <div className="grid items-end gap-4 md:grid-cols-2">
             <div>
-              <span className="eyebrow !text-terracotta">Cómo trabajamos</span>
+              <span className="eyebrow !text-terracotta">El Camino al Festejo</span>
               <h2 className="mt-3 text-3xl !text-primary-foreground sm:text-4xl">
-                Tres pasos para tu tranquilidad
+                Tres pasos simples para tu día especial
               </h2>
             </div>
             <p className="text-primary-foreground/75">
-              Te respondemos en menos de 24 horas hábiles con una cotización clara y sin compromiso.
+              Te preparamos un presupuesto estimado en minutos y coordinamos todo de manera cercana por WhatsApp.
             </p>
           </div>
           
           <ol className="mt-12 grid gap-6 md:grid-cols-3">
             <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
               <span className="font-display text-3xl text-terracotta">01</span>
-              <h3 className="mt-3 text-xl !text-primary-foreground">Cuéntanos tu idea</h3>
+              <h3 className="mt-3 text-xl !text-primary-foreground">Soñemos juntos</h3>
               <p className="mt-2 text-sm text-primary-foreground/75">
-                Por formulario o WhatsApp. Qué celebras, fecha y lugar del evento.
+                Dinos qué celebramos, la fecha y cuántos invitados te acompañarán en este día.
               </p>
             </li>
             <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
               <span className="font-display text-3xl text-terracotta">02</span>
-              <h3 className="mt-3 text-xl !text-primary-foreground">Recibe tu propuesta</h3>
+              <h3 className="mt-3 text-xl !text-primary-foreground">Presupuesto a tu medida</h3>
               <p className="mt-2 text-sm text-primary-foreground/75">
-                Cotización adaptada a tu número de invitados y necesidades de apoyo.
+                Recibe un estimado inmediato adaptado a tu espacio y las horas de ayuda que desees.
               </p>
             </li>
             <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
               <span className="font-display text-3xl text-terracotta">03</span>
-              <h3 className="mt-3 text-xl !text-primary-foreground">Disfruta tu día</h3>
+              <h3 className="mt-3 text-xl !text-primary-foreground">Vive el momento</h3>
               <p className="mt-2 text-sm text-primary-foreground/75">
-                Nuestro equipo llega puntual, uniformado y listo para hacerse cargo de todo.
+                Nuestro equipo de mamás llega con puntualidad y calidez para cuidar cada detalle por ti.
               </p>
             </li>
           </ol>
@@ -284,15 +284,15 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Impact Model Section */}
-      <section className="bg-sand">
+      <section className="bg-sand/20 border-y border-sand/35">
         <div className="container-page grid gap-12 py-20 md:grid-cols-2 md:items-center lg:py-28">
           <div>
-            <span className="eyebrow">Modelo de impacto</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl text-primary">
-              Cada celebración genera ingresos directos a hogares liderados por madres.
+            <span className="eyebrow">Celebraciones con Propósito</span>
+            <h2 className="mt-3 text-3xl sm:text-4xl text-primary font-display font-medium">
+              Tu festejo alegra a tu familia y apoya el hogar de otra mamá.
             </h2>
-            <p className="mt-5 text-muted-foreground">
-              No somos una fundación de beneficencia. Somos una agencia profesional que capacita, contrata y dignifica el trabajo de madres jefas de hogar. Tú contratas una ayuda para tu fiesta; ellas construyen autonomía económica.
+            <p className="mt-5 text-muted-foreground leading-relaxed">
+              Creemos firmemente en el poder y la dedicación de las madres. En lugar de un modelo asistencial, les brindamos capacitación gratuita, certificación profesional y empleo digno. Al contratar su ayuda para tu evento, estás impulsando la autonomía económica de mamás jefas de hogar de tu comunidad.
             </p>
             <Link to="/impacto" className="btn-ghost mt-8">
               Conoce el modelo
