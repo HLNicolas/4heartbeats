@@ -58,7 +58,7 @@ export const Nosotros: React.FC = () => {
         <div>
           <h2 className="text-3xl sm:text-4xl text-primary">Nuestra Razón de Ser</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            Nacimos al conectar dos realidades: familias que desean celebrar con tranquilidad y disfrutar de su tiempo, y madres talentosas y dedicadas que buscan un ingreso justo en un horario que les permita cuidar de sus propios hijos. En 4 Heartbeats unimos estas necesidades con afecto y profesionalismo.
+            Nacimos al conectar dos realidades: familias que desean celebrar con tranquilidad y disfrutar de su tiempo, y madres talentosas y dedicadas que buscan un ingreso justo en un horario que les permita cuidar de sus propios hijos. En Manos Aliadas unimos estas necesidades con afecto y profesionalismo.
           </p>
           <p className="mt-4 text-muted-foreground leading-relaxed">
             Cada vez que nos abres las puertas de tu celebración, estás respaldando horas de empleo digno, capacitación continua y un futuro más seguro para los hogares de nuestras colaboradoras.

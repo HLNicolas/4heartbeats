@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 interface CatalogItem {
   title: string;
   categoryDisplay: string;
-  categoryFilter: "Bodas" | "Bautizos" | "Cumpleaños" | "Corporativos";
+  categoryFilter: "Bodas" | "Bautizos" | "Cumpleaños" | "Reuniones";
   img: string;
 }
 
@@ -22,9 +22,9 @@ const catalogItems: CatalogItem[] = [
     img: import.meta.env.BASE_URL + "assets/service-candy-CCU3OixR.jpg"
   },
   {
-    title: "Lanzamiento corporativo",
-    categoryDisplay: "Corporativos · Limpieza + montaje",
-    categoryFilter: "Corporativos",
+    title: "Cóctel de Bienvenida",
+    categoryDisplay: "Reuniones · Limpieza + montaje",
+    categoryFilter: "Reuniones",
     img: import.meta.env.BASE_URL + "assets/service-cleaning-l_c3EHGw.jpg"
   },
   {
@@ -40,9 +40,9 @@ const catalogItems: CatalogItem[] = [
     img: import.meta.env.BASE_URL + "assets/service-decor-nzMl6I_T.jpg"
   },
   {
-    title: "Cena ejecutiva",
-    categoryDisplay: "Corporativos · Apoyo logístico",
-    categoryFilter: "Corporativos",
+    title: "Cena de Aniversario",
+    categoryDisplay: "Reuniones · Apoyo logístico",
+    categoryFilter: "Reuniones",
     img: import.meta.env.BASE_URL + "assets/service-cleaning-l_c3EHGw.jpg"
   },
   {
@@ -59,7 +59,7 @@ const catalogItems: CatalogItem[] = [
   }
 ];
 
-const categories = ["Todos", "Bodas", "Bautizos", "Cumpleaños", "Corporativos"] as const;
+const categories = ["Todos", "Bodas", "Bautizos", "Cumpleaños", "Reuniones"] as const;
 
 type FilterType = typeof categories[number];
 

@@ -57,10 +57,8 @@ const FormField: React.FC<FormFieldProps> = ({ label, value, onChange, type = "t
   );
 };
 
-const getMinDateStr = () => {
-  const date = new Date();
-  date.setDate(date.getDate() + 7);
-  return date.toISOString().split("T")[0];
+const getTodayDateStr = () => {
+  return new Date().toISOString().split("T")[0];
 };
 
 const isMinSevenDays = (dateStr: string) => {
@@ -74,6 +72,13 @@ const isMinSevenDays = (dateStr: string) => {
 };
 
 const SummaryDetails: React.FC<{ data: FormData; workers: number }> = ({ data, workers }) => {
+  const priceRange = calculateEstimateRange(
+    data.tipo,
+    data.invitados,
+    parseInt(data.horas, 10) || 4,
+    data.servicios
+  );
+
   return (
     <div className="mt-4 border-t border-dashed border-border/80 pt-4 text-left space-y-2 text-xs text-muted-foreground">
       <div className="flex justify-between">
@@ -96,14 +101,35 @@ const SummaryDetails: React.FC<{ data: FormData; workers: number }> = ({ data, w
         <span>Duración:</span>
         <span className="font-semibold text-foreground">{data.horas} horas</span>
       </div>
-      <div className="flex justify-between">
-        <span>Personal:</span>
-        <span className="font-semibold text-foreground">{workers} colaboradoras</span>
-      </div>
+      {workers > 0 && (
+        <div className="flex justify-between">
+          <span>Personal:</span>
+          <span className="font-semibold text-foreground">{workers} colaboradoras</span>
+        </div>
+      )}
       {data.servicios.length > 0 && (
         <div className="border-t border-border/40 pt-2">
           <span className="block mb-1 text-[10px] uppercase tracking-wider font-semibold">Servicios de interés:</span>
           <span className="block text-foreground leading-normal">{data.servicios.join(", ")}</span>
+        </div>
+      )}
+      
+      {/* Desglose resumido de costos */}
+      {(priceRange.operationalMin > 0 || priceRange.creativeMin > 0) && (
+        <div className="border-t border-border/40 pt-2 mt-2 space-y-1">
+          <span className="block mb-1 text-[10px] uppercase tracking-wider font-semibold">Desglose preliminar estimado:</span>
+          {priceRange.operationalMin > 0 && (
+            <div className="flex justify-between text-foreground/80">
+              <span>Servicios de personal (meseras/limpieza):</span>
+              <span className="font-semibold text-foreground">S/ {priceRange.operationalMin}</span>
+            </div>
+          )}
+          {priceRange.creativeMin > 0 && (
+            <div className="flex justify-between text-foreground/80">
+              <span>Servicios creativos (candy bar/decoración/insumos):</span>
+              <span className="font-semibold text-foreground">S/ {priceRange.creativeMin}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -128,11 +154,17 @@ export const Cotizar: React.FC = () => {
   const toggleService = (service: string) => {
     setFormData((prev) => {
       const isSelected = prev.servicios.includes(service);
+      let updated = isSelected
+        ? prev.servicios.filter((s) => s !== service)
+        : [...prev.servicios, service];
+      
+      // Si se deselecciona limpieza, quitar también el kit de insumos
+      if (service === "Tener la casa limpia al terminar" && isSelected) {
+        updated = updated.filter((s) => s !== "Kit de insumos de limpieza profesional (+ S/ 40)");
+      }
       return {
         ...prev,
-        servicios: isSelected
-          ? prev.servicios.filter((s) => s !== service)
-          : [...prev.servicios, service]
+        servicios: updated
       };
     });
   };
@@ -170,7 +202,8 @@ export const Cotizar: React.FC = () => {
   const priceRange = calculateEstimateRange(
     formData.tipo,
     formData.invitados,
-    parseInt(formData.horas, 10) || 4
+    parseInt(formData.horas, 10) || 4,
+    formData.servicios
   );
 
   const servicesText = formData.servicios.map((s) => `- ${s}`).join("\n");
@@ -186,7 +219,7 @@ export const Cotizar: React.FC = () => {
 - *Ciudad/Zona:* ${formData.ciudad}
 - *Invitados:* ~${formData.invitados} personas
 - *Duración:* ${formData.horas} horas
-- *Personal:* ${priceRange.workers} colaboradoras (1 cada 7 personas)
+- *Personal:* ${priceRange.workers} colaboradoras (1 cada 15 personas)
 
 *Servicios de interés:*
 ${servicesText}
@@ -205,7 +238,7 @@ _*Nota: Cotización sujeta a confirmación final._`;
           Cuéntanos sobre tu festejo.
         </h1>
         <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-          Cuatro pasos rápidos. Te responderemos en menos de 24h hábiles.
+          Completa este formulario para calcular tu estimación preliminar. Al finalizar, podrás contactarnos directamente por WhatsApp o correo para confirmar la reserva con nuestro equipo.
         </p>
       </section>
 
@@ -233,9 +266,11 @@ _*Nota: Cotización sujeta a confirmación final._`;
                 <p className="mt-2 text-3xl font-bold text-primary font-display">
                   S/ {priceRange.min} — S/ {priceRange.max}
                 </p>
-                <p className="mt-1.5 text-xs text-muted-foreground font-medium">
-                  ({priceRange.workers} colaboradoras asignadas)
-                </p>
+                {priceRange.workers > 0 && (
+                  <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                    ({priceRange.workers} colaboradoras asignadas)
+                  </p>
+                )}
                 <p className="mt-3 text-[10px] text-muted-foreground leading-normal">
                   *Incluye 5% de mantenimiento y servicio.
                 </p>
@@ -306,25 +341,50 @@ _*Nota: Cotización sujeta a confirmación final._`;
                     {serviceOptions.map((service) => {
                       const isSelected = formData.servicios.includes(service);
                       return (
-                        <button
-                          key={service}
-                          type="button"
-                          onClick={() => toggleService(service)}
-                          className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors cursor-pointer ${
-                            isSelected
-                              ? "border-terracotta bg-terracotta/5 text-foreground"
-                              : "border-border hover:border-terracotta/50 text-foreground"
-                          }`}
-                        >
-                          <span>{service}</span>
-                          <span
-                            className={`grid h-5 w-5 place-items-center rounded-full border ${
-                              isSelected ? "border-terracotta bg-terracotta text-ivory" : "border-border"
+                        <div key={service} className="flex flex-col gap-2">
+                          <button
+                            type="button"
+                            onClick={() => toggleService(service)}
+                            className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors cursor-pointer ${
+                              isSelected
+                                ? "border-terracotta bg-terracotta/5 text-foreground"
+                                : "border-border hover:border-terracotta/50 text-foreground"
                             }`}
                           >
-                            {isSelected && <Check className="h-3 w-3" />}
-                          </span>
-                        </button>
+                            <span>{service}</span>
+                            <span
+                              className={`grid h-5 w-5 place-items-center rounded-full border ${
+                                isSelected ? "border-terracotta bg-terracotta text-ivory" : "border-border"
+                              }`}
+                            >
+                              {isSelected && <Check className="h-3 w-3" />}
+                            </span>
+                          </button>
+                          
+                          {service === "Tener la casa limpia al terminar" && isSelected && (
+                            <label className="ml-2 flex items-center gap-2.5 rounded-lg border border-dashed border-terracotta/40 bg-sand/20 px-3 py-2 text-xs text-foreground cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={formData.servicios.includes("Kit de insumos de limpieza profesional (+ S/ 40)")}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      servicios: [...prev.servicios, "Kit de insumos de limpieza profesional (+ S/ 40)"]
+                                    }));
+                                  } else {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      servicios: prev.servicios.filter(s => s !== "Kit de insumos de limpieza profesional (+ S/ 40)")
+                                    }));
+                                  }
+                                }}
+                                className="rounded border-gray-300 text-terracotta focus:ring-terracotta accent-terracotta"
+                              />
+                              <span>¿Deseas que llevemos el kit de limpieza profesional? (+ S/ 40)</span>
+                            </label>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -335,12 +395,31 @@ _*Nota: Cotización sujeta a confirmación final._`;
                 <div className="space-y-4">
                   <h2 className="text-2xl text-primary">Detalles de la celebración</h2>
                   <FormField
-                    label="Fecha del evento (mínimo 7 días de anticipación)"
+                    label="Fecha del evento (mínimo 7 días de anticipación para cotización estándar)"
                     type="date"
-                    min={getMinDateStr()}
+                    min={getTodayDateStr()}
                     value={formData.fecha}
                     onChange={(val) => setFormData({ ...formData, fecha: val })}
                   />
+                  
+                  {!isMinSevenDays(formData.fecha) && formData.fecha && (
+                    <div className="rounded-2xl bg-terracotta/10 border border-terracotta/20 p-5 text-center shadow-soft animate-fade-in">
+                      <p className="text-sm text-foreground font-medium">
+                        ⚠️ Para eventos urgentes (menos de 7 días de anticipación), requerimos coordinación directa para asegurar la disponibilidad de nuestro equipo.
+                      </p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(
+                          `Hola, tengo un evento urgente programado para el día ${formData.fecha}. Me gustaría consultar su disponibilidad.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary mt-4 inline-flex items-center gap-2 !bg-terracotta hover:!bg-terracotta/90"
+                      >
+                        Contacto Urgente por WhatsApp
+                      </a>
+                    </div>
+                  )}
+
                   <FormField
                     label="Ciudad o zona del evento"
                     value={formData.ciudad}
@@ -407,9 +486,11 @@ _*Nota: Cotización sujeta a confirmación final._`;
                     <p className="mt-2 text-2xl font-bold text-primary font-display">
                       S/ {priceRange.min} — S/ {priceRange.max}
                     </p>
-                    <p className="mt-1.5 text-xs text-muted-foreground font-medium">
-                      ({priceRange.workers} colaboradoras requeridas)
-                    </p>
+                    {priceRange.workers > 0 && (
+                      <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                        ({priceRange.workers} colaboradoras requeridas)
+                      </p>
+                    )}
                     <p className="mt-2 text-[10px] text-muted-foreground leading-normal">
                       *Incluye 5% de mantenimiento y servicio.
                     </p>
@@ -417,6 +498,10 @@ _*Nota: Cotización sujeta a confirmación final._`;
                     {/* Resumen de la información ingresada */}
                     <SummaryDetails data={formData} workers={priceRange.workers} />
                   </div>
+                  
+                  <p className="text-xs text-muted-foreground text-center mt-4">
+                    * Al enviar la solicitud, te presentaremos tu resumen y podrás continuar la conversación por WhatsApp o correo para la confirmación final con nuestro equipo.
+                  </p>
                 </div>
               )}
 

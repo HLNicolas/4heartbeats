@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --radius: 1.25rem;
-  --ivory: oklch(98.5% 0.005 80);
-  --sand: #FFAC99;
-  --graphite: oklch(20% 0.005 280);
+  --radius: 1.85rem; /* Bordes mucho más redondeados y amigables */
+  --ivory: oklch(98.8% 0.006 80);
+  --sand: #FFB3A3; /* Un tono sand un poco más claro y suave */
+  --graphite: #40322d; /* Tono marrón cálido oscuro en lugar de gris pizarra frío */
   --terracotta: #F27C61;
-  --sage: oklch(62% 0.045 155);
+  --sage: oklch(64% 0.048 155);
   --background: var(--ivory);
   --foreground: var(--graphite);
   --card: oklch(100% 0 0);
@@ -18,14 +18,12 @@
   --primary-foreground: var(--ivory);
   --secondary: var(--sand);
   --secondary-foreground: var(--graphite);
-  --muted: oklch(96% 0.008 80);
-  --muted-foreground: oklch(45% 0.012 280);
+  --muted: oklch(97% 0.006 80);
+  --muted-foreground: oklch(48% 0.010 280);
   --accent: var(--terracotta);
   --accent-foreground: oklch(98.5% 0.005 80);
-  --destructive: oklch(55% 0.22 27);
-  --destructive-foreground: oklch(98.5% 0.005 80);
-  --border: oklch(88% 0.015 75);
-  --input: oklch(90% 0.012 75);
+  --border: rgba(242, 124, 97, 0.12); /* Bordes coral súper difuminados */
+  --input: rgba(242, 124, 97, 0.16);
   --ring: var(--terracotta);
 }
 
@@ -52,7 +50,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-card-foreground: var(--color-card-foreground);
 
   --color-terracotta: var(--terracotta);
   --color-ivory: var(--ivory);
@@ -60,12 +58,13 @@
   --color-graphite: var(--graphite);
   --color-sage: var(--sage);
 
-  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  /* Sombras cálidas, aterciopeladas y difusas */
+  --shadow-soft: 0 10px 30px -4px rgba(242, 124, 97, 0.06);
+  --shadow-card: 0 20px 45px -10px rgba(140, 25, 0, 0.04), 0 8px 24px -5px rgba(242, 124, 97, 0.02);
 
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-sm: calc(var(--radius) - 8px);
 }
 
 body {

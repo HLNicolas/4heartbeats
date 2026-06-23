@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Wrench, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
+import { Heart, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
 import { calculateEstimateRange } from "../utils/pricing";
 
 interface FAQItem {
@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "¿Los insumos y materiales de limpieza están incluidos?",
-    answer: "Nuestros servicios estándar no incluyen insumos ni herramientas de limpieza (como trapeadores, aspiradoras o detergentes). Sin embargo, al coordinar los detalles finales de tu cotización, podemos cotizar el kit completo de insumos si prefieres que nosotros los llevemos."
+    answer: "Por defecto, nuestras colaboradoras utilizan los materiales de limpieza disponibles en tu hogar o local. Sin embargo, para tu total tranquilidad, puedes elegir en nuestro cotizador que nuestro equipo lleve un kit completo de insumos de limpieza profesionales por una tarifa fija adicional de S/ 40 por evento."
   },
   {
     question: "¿Cómo funciona el transporte de la repostería y decoración?",
@@ -118,8 +118,8 @@ export const Servicios: React.FC = () => {
       <section className="border-y border-border bg-primary/[0.03]">
         <div className="container-page py-20">
           <div className="flex items-center gap-3">
-            <Wrench className="h-5 w-5 text-primary" />
-            <span className="eyebrow !text-primary">Manos Aliadas</span>
+            <Heart className="h-5 w-5 text-primary fill-primary/10" />
+            <span className="eyebrow !text-primary">Cuidado & Apoyo</span>
           </div>
           <h2 className="mt-3 max-w-2xl text-3xl sm:text-4xl text-primary">Tu hogar en las mejores manos</h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">

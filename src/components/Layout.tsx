@@ -20,11 +20,11 @@ export const Header: React.FC = () => {
         <Link to="/" className="flex items-center gap-2 min-w-0">
           <img
             src={`${import.meta.env.BASE_URL}assets/logo.jpg`}
-            alt="Logo 4 Heartbeats"
+            alt="Logo Manos Aliadas"
             className="h-9 w-9 shrink-0 object-contain"
           />
           <span className="truncate font-display text-lg text-primary">
-            4 Heartbeats
+            Manos Aliadas
           </span>
         </Link>
         
@@ -103,10 +103,10 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-2">
             <img
               src={`${import.meta.env.BASE_URL}assets/logo.jpg`}
-              alt="Logo 4 Heartbeats"
+              alt="Logo Manos Aliadas"
               className="h-9 w-9 shrink-0 object-contain"
             />
-            <span className="font-display text-xl">4 Heartbeats</span>
+            <span className="font-display text-xl">Manos Aliadas</span>
           </div>
           <p className="mt-4 text-sm text-primary-foreground/75 leading-relaxed">
             Agencia de servicios operativos y creativos para eventos. Cada contrato es trabajo digno para mujeres capacitadas.
@@ -201,7 +201,7 @@ export const Footer: React.FC = () => {
                 +00 000 000 000
               </a>
             </li>
-            <li>hola@manosquecrean.co</li>
+            <li>hola@manosaliadas.co</li>
             <li>Lun a Sáb · 8:00 — 19:00</li>
             <li>Cobertura: ciudad principal y área metropolitana</li>
           </ul>
@@ -214,7 +214,7 @@ export const Footer: React.FC = () => {
 
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-primary-foreground/60 md:flex-row md:items-center md:justify-between">
-          <p>© 2026 4 Heartbeats. Todos los derechos reservados.</p>
+          <p>© 2026 Manos Aliadas. Todos los derechos reservados.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-terracotta transition-colors">
               Privacidad

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ShieldCheck, Wrench, Sparkles, Check, Star } from "lucide-react";
+import { ArrowRight, ShieldCheck, Heart, Sparkles, Check, Star } from "lucide-react";
 
 export const Home: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ export const Home: React.FC = () => {
               <span className="text-terracotta italic">Nosotros nos encargamos</span> del resto.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Limpieza, mantelería, tortas caseras y detalles hechos a mano con el amor y cuidado de una madre. Creamos el ambiente ideal para que solo te preocupes de celebrar.
+              Servicios de limpieza, atención y repostería artesanal para tus eventos, brindados con la dedicación de madres profesionales y de plena confianza. Delega la logística en sus manos y disfruta tu celebración con total tranquilidad.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/cotizar" className="btn-primary">
@@ -25,9 +25,13 @@ export const Home: React.FC = () => {
                 Ver catálogo
               </Link>
             </div>
-            <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <ShieldCheck className="h-5 w-5 text-sage" />
-              Personal de total confianza · Respuesta en menos de 24h
+            <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-sage/10 px-3 py-1 text-xs font-semibold text-sage">
+                🌸 Calidez de madre garantizada
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/10 px-3 py-1 text-xs font-semibold text-terracotta">
+                ⚡ Respuesta rápida por WhatsApp
+              </span>
             </div>
           </div>
           
@@ -100,8 +104,8 @@ export const Home: React.FC = () => {
             </div>
             <div className="p-7">
               <div className="flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-primary" />
-                <span className="eyebrow !text-foreground/60">Manos Aliadas en Casa</span>
+                <Heart className="h-4 w-4 text-primary fill-primary/10" />
+                <span className="eyebrow !text-foreground/60">Cuidado & Apoyo en Casa</span>
               </div>
               <h3 className="mt-2 text-2xl !text-foreground font-display">El cuidado que tu hogar merece</h3>
               <p className="mt-3 text-muted-foreground">
@@ -266,7 +270,7 @@ export const Home: React.FC = () => {
             <div className="overflow-hidden">
               <img
                 src={`${import.meta.env.BASE_URL}assets/service-cleaning-l_c3EHGw.jpg`}
-                alt="Lanzamiento corporativo"
+                alt="Cumpleaños temático en casa"
                 loading="lazy"
                 width="1200"
                 height="900"
@@ -277,7 +281,7 @@ export const Home: React.FC = () => {
               <p className="text-xs uppercase tracking-widest text-muted-foreground">
                 Limpieza + apoyo
               </p>
-              <h3 className="mt-1 text-lg !text-foreground font-display">Cumpleaños temático</h3>
+              <h3 className="mt-1 text-lg !text-foreground font-display">Cumpleaños y reuniones en casa</h3>
             </div>
           </article>
         </div>

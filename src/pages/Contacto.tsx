@@ -16,7 +16,7 @@ const contactDetails: ContactInfo[] = [
   {
     Icon: Mail,
     label: "Correo",
-    value: "hola@manosquecrean.co"
+    value: "hola@manosaliadas.co"
   },
   {
     Icon: Phone,

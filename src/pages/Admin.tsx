@@ -8,7 +8,10 @@ import {
   NEGOTIABLE_MARGIN,
   GUESTS_PER_WORKER,
   EVENT_MULTIPLIERS,
-  getWorkersNeeded
+  RATE_CANDY_BAR_PER_GUEST,
+  RATE_DECORATION_BASE,
+  RATE_SOUVENIRS_PER_GUEST,
+  CLEANING_KIT_COST
 } from "../utils/pricing";
 
 export const Admin: React.FC = () => {
@@ -20,6 +23,11 @@ export const Admin: React.FC = () => {
   const [simEvent, setSimEvent] = useState("Cumpleaños");
   const [simGuests, setSimGuests] = useState("30");
   const [simHours, setSimHours] = useState("4");
+  const [simServices, setSimServices] = useState<string[]>([
+    "Servir y atender invitados",
+    "Tener la casa limpia al terminar",
+    "Montaje de mesas y sillas"
+  ]);
   const [simResult, setSimResult] = useState<any>(null);
 
   // Check session storage on mount
@@ -52,19 +60,49 @@ export const Admin: React.FC = () => {
     const guestsNum = parseInt(simGuests, 10) || 0;
     const hoursNum = parseInt(simHours, 10) || 0;
 
-    const workers = getWorkersNeeded(guestsNum);
-    const eventMultiplier = EVENT_MULTIPLIERS[simEvent] || 1.10;
+    const hasAtender = simServices.includes("Servir y atender invitados");
+    const hasLimpieza = simServices.includes("Tener la casa limpia al terminar");
+    const hasMontaje = simServices.includes("Montaje de mesas y sillas");
+    const hasCleaningKit = simServices.includes("Kit de insumos de limpieza profesional (+ S/ 40)");
+    
+    const hasOperational = hasAtender || hasLimpieza || hasMontaje || simServices.length === 0;
 
-    // Costo primer colaborador
-    const firstWorkerCost = BASE_HOURLY_RATE * hoursNum * eventMultiplier;
-    // Costo adicionales
-    const additionalWorkersCost = BASE_HOURLY_RATE * hoursNum * (workers - 1);
-    // Costo base total
-    const totalBaseCost = firstWorkerCost + additionalWorkersCost;
+    const hasCandyBar = simServices.includes("Candy bar y repostería");
+    const hasDecor = simServices.includes("Decoración temática");
+    const hasSouvenirs = simServices.includes("Artesanías y recordatorios");
+
+    const eventMultiplier = EVENT_MULTIPLIERS[simEvent] || 1.10;
+    let workers = 0;
+    let firstWorkerCost = 0;
+    let additionalWorkersCost = 0;
+    let totalBaseCost = 0;
+
+    if (hasOperational) {
+      workers = Math.max(1, Math.ceil(guestsNum / GUESTS_PER_WORKER));
+      firstWorkerCost = BASE_HOURLY_RATE * hoursNum * eventMultiplier;
+      additionalWorkersCost = BASE_HOURLY_RATE * hoursNum * (workers - 1);
+      totalBaseCost = firstWorkerCost + additionalWorkersCost;
+    }
+
+    let creativeCost = 0;
+    if (hasCandyBar) {
+      creativeCost += RATE_CANDY_BAR_PER_GUEST * guestsNum;
+    }
+    if (hasDecor) {
+      creativeCost += RATE_DECORATION_BASE;
+    }
+    if (hasSouvenirs) {
+      creativeCost += RATE_SOUVENIRS_PER_GUEST * guestsNum;
+    }
+    if (hasCleaningKit) {
+      creativeCost += CLEANING_KIT_COST;
+    }
+
+    const totalAccumulatedCost = totalBaseCost + creativeCost;
 
     // Divisor para que comisiones sean del precio final
     const divisor = 1 - (COMMISSION_MAINTENANCE + COMMISSION_INTERMEDIARY);
-    const minPrice = totalBaseCost / divisor;
+    const minPrice = totalAccumulatedCost / divisor;
     const maxPrice = minPrice * (1 + NEGOTIABLE_MARGIN);
 
     // Desglose de comisiones sobre el precio final (mínimo)
@@ -74,9 +112,10 @@ export const Admin: React.FC = () => {
     setSimResult({
       workers,
       eventMultiplier,
-      firstWorkerCost,
-      additionalWorkersCost,
-      totalBaseCost,
+      firstWorkerCost: Math.round(firstWorkerCost),
+      additionalWorkersCost: Math.round(additionalWorkersCost),
+      creativeCost: Math.round(creativeCost),
+      totalBaseCost: Math.round(totalAccumulatedCost),
       maintenanceFee: Math.round(maintenanceFee),
       profitFee: Math.round(profitFee),
       minPrice: Math.round(minPrice),
@@ -154,14 +193,41 @@ export const Admin: React.FC = () => {
           <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
             <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ganancia Intermediación</dt>
             <dd className="mt-2 text-3xl font-bold text-primary font-display">{(COMMISSION_INTERMEDIARY * 100).toFixed(0)}%</dd>
-            <dd className="mt-1 text-xs text-muted-foreground">Profit neto para 4 Heartbeats</dd>
+            <dd className="mt-1 text-xs text-muted-foreground">Profit neto para Manos Aliadas</dd>
           </div>
           <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
             <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Proporción de Personal</dt>
             <dd className="mt-2 text-3xl font-bold text-primary font-display">1 / {GUESTS_PER_WORKER}</dd>
-            <dd className="mt-1 text-xs text-muted-foreground">Una colaboradora por cada 7 invitados</dd>
+            <dd className="mt-1 text-xs text-muted-foreground">Una colaboradora por cada 15 invitados</dd>
           </div>
         </section>
+
+        {/* Tarifas Creativas Grid */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-primary font-display">Tarifas Creativas y Adicionales</h2>
+          <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Candy Bar / Repostería</dt>
+              <dd className="mt-2 text-3xl font-bold text-primary font-display">S/ {RATE_CANDY_BAR_PER_GUEST}</dd>
+              <dd className="mt-1 text-xs text-muted-foreground">Tarifa por invitado</dd>
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Decoración Temática</dt>
+              <dd className="mt-2 text-3xl font-bold text-primary font-display">S/ {RATE_DECORATION_BASE}</dd>
+              <dd className="mt-1 text-xs text-muted-foreground">Tarifa base por evento</dd>
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recuerdos / Souvenirs</dt>
+              <dd className="mt-2 text-3xl font-bold text-primary font-display">S/ {RATE_SOUVENIRS_PER_GUEST}</dd>
+              <dd className="mt-1 text-xs text-muted-foreground">Tarifa por invitado</dd>
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Kit Insumos Limpieza</dt>
+              <dd className="mt-2 text-3xl font-bold text-primary font-display">S/ {CLEANING_KIT_COST}</dd>
+              <dd className="mt-1 text-xs text-muted-foreground">Tarifa fija opcional por evento</dd>
+            </div>
+          </section>
+        </div>
 
         {/* Main Content Split */}
         <div className="grid gap-8 lg:grid-cols-12">
@@ -266,6 +332,40 @@ export const Admin: React.FC = () => {
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Servicios simulados</label>
+                  <div className="grid gap-2 text-xs sm:grid-cols-2">
+                    {[
+                      "Servir y atender invitados",
+                      "Tener la casa limpia al terminar",
+                      "Montaje de mesas y sillas",
+                      "Candy bar y repostería",
+                      "Decoración temática",
+                      "Artesanías y recordatorios",
+                      "Kit de insumos de limpieza profesional (+ S/ 40)"
+                    ].map((service) => {
+                      const isChecked = simServices.includes(service);
+                      return (
+                        <label key={service} className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSimServices([...simServices, service]);
+                              } else {
+                                setSimServices(simServices.filter((s) => s !== service));
+                              }
+                            }}
+                            className="rounded border-gray-300 text-terracotta focus:ring-terracotta accent-terracotta"
+                          />
+                          <span>{service}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <button type="submit" className="btn-primary w-full cursor-pointer">
                   Calcular Desglose
                 </button>
@@ -282,12 +382,19 @@ export const Admin: React.FC = () => {
                       <span className="font-semibold text-foreground">{simResult.workers} mamás</span>
                     </div>
                     <div className="flex justify-between pt-2">
+                      <span className="text-muted-foreground font-semibold">Costos Operativos:</span>
+                    </div>
+                    <div className="flex justify-between pt-1 pl-4">
                       <span className="text-muted-foreground">Primer colaborador (x{simResult.eventMultiplier.toFixed(2)}):</span>
                       <span className="font-semibold text-foreground">S/ {simResult.firstWorkerCost}</span>
                     </div>
-                    <div className="flex justify-between pt-2">
-                      <span className="text-muted-foreground">Colaboradores adicionales ({simResult.workers - 1}):</span>
+                    <div className="flex justify-between pt-1 pl-4">
+                      <span className="text-muted-foreground">Colaboradores adicionales ({simResult.workers > 0 ? simResult.workers - 1 : 0}):</span>
                       <span className="font-semibold text-foreground">S/ {simResult.additionalWorkersCost}</span>
+                    </div>
+                    <div className="flex justify-between pt-2">
+                      <span className="text-muted-foreground font-semibold">Costos Creativos / Insumos:</span>
+                      <span className="font-semibold text-foreground">S/ {simResult.creativeCost}</span>
                     </div>
                     <div className="flex justify-between pt-2 border-t border-dashed">
                       <span className="text-muted-foreground font-medium">Cotización base acumulada:</span>

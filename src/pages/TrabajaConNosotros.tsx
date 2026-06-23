@@ -96,7 +96,7 @@ export const TrabajaConNosotros: React.FC = () => {
             <div>
               <h2 className="text-3xl text-primary font-medium font-display">¿Por qué trabajar con nosotros?</h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                En 4 Heartbeats no solo ofrecemos oportunidades de trabajo, construimos una comunidad donde crecemos juntas. Creemos en tu potencial y te brindamos las herramientas para salir adelante.
+                En Manos Aliadas no solo ofrecemos oportunidades de trabajo, construimos una comunidad donde crecemos juntas. Creemos en tu potencial y te brindamos las herramientas para salir adelante.
               </p>
             </div>
             
