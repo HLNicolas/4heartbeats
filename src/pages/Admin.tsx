@@ -28,6 +28,7 @@ export const Admin: React.FC = () => {
     "Tener la casa limpia al terminar",
     "Montaje de mesas y sillas"
   ]);
+  const [simDonation, setSimDonation] = useState(false);
   const [simResult, setSimResult] = useState<any>(null);
 
   // Check session storage on mount
@@ -102,7 +103,12 @@ export const Admin: React.FC = () => {
 
     // Divisor para que comisiones sean del precio final
     const divisor = 1 - (COMMISSION_MAINTENANCE + COMMISSION_INTERMEDIARY);
-    const minPrice = totalAccumulatedCost / divisor;
+    let minPrice = totalAccumulatedCost / divisor;
+
+    // Aplicar descuento por donación (10%)
+    const discountFactor = simDonation ? 0.90 : 1.0;
+    minPrice = minPrice * discountFactor;
+
     const maxPrice = minPrice * (1 + NEGOTIABLE_MARGIN);
 
     // Desglose de comisiones sobre el precio final (mínimo)
@@ -112,10 +118,10 @@ export const Admin: React.FC = () => {
     setSimResult({
       workers,
       eventMultiplier,
-      firstWorkerCost: Math.round(firstWorkerCost),
-      additionalWorkersCost: Math.round(additionalWorkersCost),
-      creativeCost: Math.round(creativeCost),
-      totalBaseCost: Math.round(totalAccumulatedCost),
+      firstWorkerCost: Math.round(firstWorkerCost * discountFactor),
+      additionalWorkersCost: Math.round(additionalWorkersCost * discountFactor),
+      creativeCost: Math.round(creativeCost * discountFactor),
+      totalBaseCost: Math.round(totalAccumulatedCost * discountFactor),
       maintenanceFee: Math.round(maintenanceFee),
       profitFee: Math.round(profitFee),
       minPrice: Math.round(minPrice),
@@ -364,6 +370,19 @@ export const Admin: React.FC = () => {
                       );
                     })}
                   </div>
+                </div>
+
+                {/* Checkbox para simulación de Donación */}
+                <div>
+                  <label className="flex items-center gap-2.5 rounded-lg border border-dashed border-terracotta/30 bg-terracotta/[0.02] px-3 py-2 text-xs text-foreground cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={simDonation}
+                      onChange={(e) => setSimDonation(e.target.checked)}
+                      className="rounded border-gray-300 text-terracotta focus:ring-terracotta accent-terracotta"
+                    />
+                    <span>🎁 Simular Donación Social (Aplicar 10% de descuento)</span>
+                  </label>
                 </div>
 
                 <button type="submit" className="btn-primary w-full cursor-pointer">

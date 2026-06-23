@@ -46,7 +46,8 @@ export const calculateEstimateRange = (
   eventType: string,
   guestCount: number | string,
   hours: number,
-  selectedServices: string[] = []
+  selectedServices: string[] = [],
+  hasDonation: boolean = false
 ): PricingRange => {
   const eventMultiplier = EVENT_MULTIPLIERS[eventType] || 1.10;
   const guests = typeof guestCount === "string" ? parseInt(guestCount, 10) || 0 : guestCount;
@@ -95,7 +96,11 @@ export const calculateEstimateRange = (
   
   // Los porcentajes de mantenimiento (5%) e intermediación (15%) son del precio final
   const totalCommissionDivisor = 1 - (COMMISSION_MAINTENANCE + COMMISSION_INTERMEDIARY);
-  const minPrice = totalAccumulatedCost / totalCommissionDivisor;
+  let minPrice = totalAccumulatedCost / totalCommissionDivisor;
+
+  // Aplicar descuento por donación (10%)
+  const discountFactor = hasDonation ? 0.90 : 1.0;
+  minPrice = minPrice * discountFactor;
   
   // Rango negociable (15% adicional para el valor máximo)
   const maxPrice = minPrice * (1 + NEGOTIABLE_MARGIN);
@@ -104,7 +109,7 @@ export const calculateEstimateRange = (
     min: Math.round(minPrice),
     max: Math.round(maxPrice),
     workers: hasOperational ? workers : 0,
-    operationalMin: Math.round(totalBaseCost / totalCommissionDivisor),
-    creativeMin: Math.round(creativeCost / totalCommissionDivisor)
+    operationalMin: Math.round((totalBaseCost / totalCommissionDivisor) * discountFactor),
+    creativeMin: Math.round((creativeCost / totalCommissionDivisor) * discountFactor)
   };
 };

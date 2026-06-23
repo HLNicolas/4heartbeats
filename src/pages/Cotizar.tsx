@@ -9,6 +9,7 @@ interface FormData {
   ciudad: string;
   invitados: string;
   horas: string;
+  donacion: string;
   nombre: string;
   contacto: string;
   canal: "WhatsApp" | "Correo";
@@ -76,7 +77,8 @@ const SummaryDetails: React.FC<{ data: FormData; workers: number }> = ({ data, w
     data.tipo,
     data.invitados,
     parseInt(data.horas, 10) || 4,
-    data.servicios
+    data.servicios,
+    data.donacion !== "Ninguna"
   );
 
   return (
@@ -132,6 +134,16 @@ const SummaryDetails: React.FC<{ data: FormData; workers: number }> = ({ data, w
           )}
         </div>
       )}
+
+      {/* Fila informativa de la donación */}
+      {data.donacion !== "Ninguna" && (
+        <div className="border-t border-border/40 pt-2 mt-2">
+          <div className="flex justify-between text-sage font-semibold">
+            <span>Descuento por donación (10%):</span>
+            <span>Aplicado (Trae {data.donacion.toLowerCase()}) 🌸</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -146,6 +158,7 @@ export const Cotizar: React.FC = () => {
     ciudad: "",
     invitados: "",
     horas: "4", // Default value
+    donacion: "Ninguna",
     nombre: "",
     contacto: "",
     canal: "WhatsApp"
@@ -203,7 +216,8 @@ export const Cotizar: React.FC = () => {
     formData.tipo,
     formData.invitados,
     parseInt(formData.horas, 10) || 4,
-    formData.servicios
+    formData.servicios,
+    formData.donacion !== "Ninguna"
   );
 
   const servicesText = formData.servicios.map((s) => `- ${s}`).join("\n");
@@ -219,7 +233,8 @@ export const Cotizar: React.FC = () => {
 - *Ciudad/Zona:* ${formData.ciudad}
 - *Invitados:* ~${formData.invitados} personas
 - *Duración:* ${formData.horas} horas
-- *Personal:* ${priceRange.workers} colaboradoras (1 cada 15 personas)
+- *Donación con Impacto:* ${formData.donacion !== "Ninguna" ? `${formData.donacion} (Descuento 10% aplicado)` : "Ninguna"}
+- *Personal:* ${priceRange.workers > 0 ? `${priceRange.workers} colaboradoras (1 cada 15 personas)` : "No requerido"}
 
 *Servicios de interés:*
 ${servicesText}
@@ -227,6 +242,7 @@ ${servicesText}
 *Cotización Estimada:*
 S/ ${priceRange.min} - S/ ${priceRange.max}* (rango negociable)
 
+_${formData.donacion !== "Ninguna" ? "*¡Descuento del 10% incluido por donación social!*" : ""}_
 _*Nota: Cotización sujeta a confirmación final._`;
 
   return (
@@ -440,6 +456,42 @@ _*Nota: Cotización sujeta a confirmación final._`;
                       value={formData.horas}
                       onChange={(val) => setFormData({ ...formData, horas: val })}
                     />
+                  </div>
+
+                  {/* Donación Social con Descuento */}
+                  <div className="mt-4 rounded-2xl border border-dashed border-terracotta/30 bg-terracotta/[0.02] p-5 space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
+                        <span>🎁</span> Donación Social (Opcional - ¡Obtén 10% de descuento!)
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Si deseas apoyar trayendo una donación el día del evento, te descontamos el 10% del total de tu cotización en agradecimiento a tu apoyo social.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { id: "Ninguna", label: "No donar por ahora" },
+                        { id: "Víveres", label: "Víveres (alimentos no perecibles) 🌾" },
+                        { id: "Ropa", label: "Ropa en buen estado 👕" },
+                        { id: "Juguetes o útiles", label: "Juguetes o útiles escolares 🎨" }
+                      ].map((opt) => {
+                        const isSelected = formData.donacion === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, donacion: opt.id })}
+                            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium cursor-pointer transition-colors ${
+                              isSelected
+                                ? "border-terracotta bg-terracotta text-ivory"
+                                : "border-border bg-card text-foreground hover:border-terracotta/50"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
